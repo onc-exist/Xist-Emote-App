@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../providers/overlay_provider.dart';
 import 'emote_slot.dart';
 import 'radial_wheel_painter.dart';
-import '../main.dart';
 
 // Final, stateless widget. All state is handled by OverlayProvider.
 class EmoteWheel extends StatelessWidget {
