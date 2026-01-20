@@ -11,12 +11,14 @@ class RadialWheelPainter extends CustomPainter {
 
     // Paint for the main outer shell
     final shellPaint = Paint()
-      ..color = Colors.white.withAlpha(10) // Very faint
+      ..color = Colors.white
+          .withAlpha(10) // Very faint
       ..style = PaintingStyle.fill;
 
     // Paint for the inner icon track
     final trackPaint = Paint()
-      ..color = Colors.white.withAlpha(15) // Slightly more visible
+      ..color = Colors.white
+          .withAlpha(15) // Slightly more visible
       ..style = PaintingStyle.fill;
 
     // Draw the outer shell first

@@ -28,14 +28,14 @@ class OverlayService with ChangeNotifier {
     try {
       final status = await Permission.systemAlertWindow.request();
       _hasPermission = status.isGranted;
-      
+
       if (!_hasPermission) {
         // Show dialog to guide user to settings
         if (context.mounted) {
           _showPermissionDialog(context);
         }
       }
-      
+
       notifyListeners();
     } catch (e) {
       developer.log('Error requesting overlay permission: $e');
@@ -79,7 +79,7 @@ class OverlayService with ChangeNotifier {
     } else {
       await _enableOverlay(context);
     }
-    
+
     notifyListeners();
   }
 
@@ -93,9 +93,7 @@ class OverlayService with ChangeNotifier {
       // Create overlay entry
       _overlayEntry = OverlayEntry(
         builder: (context) => MultiProvider(
-          providers: [
-            ChangeNotifierProvider(create: (_) => OverlayProvider()),
-          ],
+          providers: [ChangeNotifierProvider(create: (_) => OverlayProvider())],
           child: const EmoteOverlay(),
         ),
       );
@@ -103,9 +101,8 @@ class OverlayService with ChangeNotifier {
       // Insert overlay
       Overlay.of(context).insert(_overlayEntry!);
       _isOverlayActive = true;
-      
+
       developer.log('Overlay enabled');
-      
     } catch (e) {
       developer.log('Error enabling overlay: $e');
       _isOverlayActive = false;
@@ -117,9 +114,8 @@ class OverlayService with ChangeNotifier {
       _overlayEntry?.remove();
       _overlayEntry = null;
       _isOverlayActive = false;
-      
+
       developer.log('Overlay disabled');
-      
     } catch (e) {
       developer.log('Error disabling overlay: $e');
     }

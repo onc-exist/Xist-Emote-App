@@ -7,8 +7,8 @@ class EmoteSlot extends StatelessWidget {
   final double itemSize;
 
   const EmoteSlot({
-    super.key, 
-    required this.emote, 
+    super.key,
+    required this.emote,
     this.isFocused = false,
     required this.itemSize,
   });
@@ -23,8 +23,15 @@ class EmoteSlot extends StatelessWidget {
       padding: EdgeInsets.all(AppSpacing.xs), // Added internal padding
       decoration: BoxDecoration(
         color: Colors.white.withAlpha(isFocused ? 25 : 10),
-        borderRadius: BorderRadius.circular(itemSize * 0.25), // Responsive border radius
-        border: isFocused ? Border.all(color: primaryColor.withAlpha((255 * 0.5).round()), width: 1.0) : null,
+        borderRadius: BorderRadius.circular(
+          itemSize * 0.25,
+        ), // Responsive border radius
+        border: isFocused
+            ? Border.all(
+                color: primaryColor.withAlpha((255 * 0.5).round()),
+                width: 1.0,
+              )
+            : null,
         boxShadow: isFocused
             ? [
                 BoxShadow(
@@ -47,7 +54,12 @@ class EmoteSlot extends StatelessWidget {
                 color: isFocused ? primaryColor : emote['color'],
                 size: itemSize * 0.47, // Responsive icon size
                 shadows: isFocused
-                    ? [Shadow(color: primaryColor.withAlpha((255 * 0.5).round()), blurRadius: AppSpacing.sm)]
+                    ? [
+                        Shadow(
+                          color: primaryColor.withAlpha((255 * 0.5).round()),
+                          blurRadius: AppSpacing.sm,
+                        ),
+                      ]
                     : [],
               )
             : Text(
@@ -57,7 +69,12 @@ class EmoteSlot extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   fontSize: itemSize * 0.28, // Responsive font size
                   shadows: isFocused
-                      ? [Shadow(color: primaryColor.withAlpha((255 * 0.5).round()), blurRadius: AppSpacing.sm)]
+                      ? [
+                          Shadow(
+                            color: primaryColor.withAlpha((255 * 0.5).round()),
+                            blurRadius: AppSpacing.sm,
+                          ),
+                        ]
                       : [],
                 ),
               ),

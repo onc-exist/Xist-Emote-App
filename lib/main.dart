@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,13 +42,16 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Xist Emote App',
         theme: ThemeData(
+          brightness: Brightness.dark,
+          textTheme: GoogleFonts.interTextTheme(
+            ThemeData(brightness: Brightness.dark).textTheme,
+          ),
+          primaryColor: const Color(0xff00f0b4),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xff00f0b4),
             brightness: Brightness.dark,
-            textTheme: GoogleFonts.interTextTheme(
-              ThemeData(brightness: Brightness.dark).textTheme,
-            ),
-            primaryColor: const Color(0xff00f0b4),
-            colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xff00f0b4), brightness: Brightness.dark)),
+          ),
+        ),
         debugShowCheckedModeBanner: false,
         home: const HomeScreen(),
       ),
@@ -64,7 +66,8 @@ class GamingOverlay extends StatefulWidget {
   State<GamingOverlay> createState() => _GamingOverlayState();
 }
 
-class _GamingOverlayState extends State<GamingOverlay> with TickerProviderStateMixin {
+class _GamingOverlayState extends State<GamingOverlay>
+    with TickerProviderStateMixin {
   late AnimationController _visibilityController;
   late AnimationController _popController;
 
@@ -86,7 +89,8 @@ class _GamingOverlayState extends State<GamingOverlay> with TickerProviderStateM
       provider.addListener(() {
         if (provider.isOverlayVisible && !_visibilityController.isCompleted) {
           _visibilityController.forward();
-        } else if (!provider.isOverlayVisible && _visibilityController.isCompleted) {
+        } else if (!provider.isOverlayVisible &&
+            _visibilityController.isCompleted) {
           _visibilityController.reverse();
         }
       });
@@ -113,20 +117,30 @@ class _GamingOverlayState extends State<GamingOverlay> with TickerProviderStateM
                 return AnimatedBuilder(
                   animation: _visibilityController,
                   builder: (context, child) {
-                    final double animationOffset = 1.0 - _visibilityController.value;
+                    final double animationOffset =
+                        1.0 - _visibilityController.value;
                     final screenSize = MediaQuery.of(context).size;
-                    
+
                     // Responsive wheel width with constraints
                     const double maxWheelWidth = 600.0;
                     const double minWheelWidth = 280.0;
-                    final double wheelWidth = (screenSize.width * 0.6).clamp(minWheelWidth, maxWheelWidth);
-                    
+                    final double wheelWidth = (screenSize.width * 0.6).clamp(
+                      minWheelWidth,
+                      maxWheelWidth,
+                    );
+
                     // Responsive positioning based on screen size
-                    final double offsetMultiplier = screenSize.width < 800 ? 0.4 : 0.3;
-                    final double baseOffset = screenSize.width < 600 ? wheelWidth * 0.3 : wheelWidth * 0.5;
-                    
+                    final double offsetMultiplier = screenSize.width < 800
+                        ? 0.4
+                        : 0.3;
+                    final double baseOffset = screenSize.width < 600
+                        ? wheelWidth * 0.3
+                        : wheelWidth * 0.5;
+
                     return Positioned(
-                      left: -baseOffset - (animationOffset * wheelWidth * offsetMultiplier),
+                      left:
+                          -baseOffset -
+                          (animationOffset * wheelWidth * offsetMultiplier),
                       top: AppSpacing.sm,
                       bottom: AppSpacing.sm,
                       child: FadeTransition(
@@ -146,8 +160,8 @@ class _GamingOverlayState extends State<GamingOverlay> with TickerProviderStateM
                             children: [
                               GestureDetector(
                                 onTap: provider.selectEmote,
-                                onVerticalDragUpdate: (details) =>
-                                    provider.handlePanUpdate(details, _popController),
+                                onVerticalDragUpdate: (details) => provider
+                                    .handlePanUpdate(details, _popController),
                                 child: EmoteWheel(
                                   scrollAngle: provider.scrollAngle,
                                   emotes: provider.emotes,
@@ -158,7 +172,10 @@ class _GamingOverlayState extends State<GamingOverlay> with TickerProviderStateM
                               // Removed redundant Positioned and Center widgets
                               ClipOval(
                                 child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                                  filter: ImageFilter.blur(
+                                    sigmaX: 10.0,
+                                    sigmaY: 10.0,
+                                  ),
                                   child: GestureDetector(
                                     onTap: provider.dismissOverlay,
                                     child: Container(
@@ -222,12 +239,14 @@ class RightHandle extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<OverlayProvider>(context);
     final screenSize = MediaQuery.of(context).size;
-    
+
     // Responsive handle dimensions
-    final double handleWidth = screenSize.width < 600 ? AppSpacing.lg : AppSpacing.xl;
-    final double handleHeight = screenSize.height < 600 ? 
-      AppSpacing.xxl + AppSpacing.lg : 
-      AppSpacing.xxl + AppSpacing.xl + AppSpacing.md;
+    final double handleWidth = screenSize.width < 600
+        ? AppSpacing.lg
+        : AppSpacing.xl;
+    final double handleHeight = screenSize.height < 600
+        ? AppSpacing.xxl + AppSpacing.lg
+        : AppSpacing.xxl + AppSpacing.xl + AppSpacing.md;
 
     return Positioned(
       right: 0,
@@ -250,7 +269,7 @@ class RightHandle extends StatelessWidget {
                   color: Theme.of(context).primaryColor.withAlpha(51),
                   blurRadius: AppSpacing.sm + AppSpacing.xs,
                   spreadRadius: AppSpacing.xs,
-                )
+                ),
               ],
             ),
             child: ClipRRect(
@@ -261,7 +280,9 @@ class RightHandle extends StatelessWidget {
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Icon(
-                  provider.isOverlayVisible ? Icons.chevron_left : Icons.chevron_right,
+                  provider.isOverlayVisible
+                      ? Icons.chevron_left
+                      : Icons.chevron_right,
                   color: Theme.of(context).primaryColor,
                   size: handleWidth * 0.75, // Responsive icon size
                 ),

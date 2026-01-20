@@ -13,7 +13,7 @@ class EmoteOverlay extends StatefulWidget {
   State<EmoteOverlay> createState() => _EmoteOverlayState();
 }
 
-class _EmoteOverlayState extends State<EmoteOverlay> 
+class _EmoteOverlayState extends State<EmoteOverlay>
     with TickerProviderStateMixin {
   late AnimationController _visibilityController;
   late AnimationController _popController;
@@ -70,12 +70,10 @@ class _EmoteOverlayState extends State<EmoteOverlay>
           Positioned.fill(
             child: GestureDetector(
               onTap: _hideOverlay,
-              child: Container(
-                color: Colors.transparent,
-              ),
+              child: Container(color: Colors.transparent),
             ),
           ),
-          
+
           // Emote wheel overlay
           Positioned(
             left: 0,
@@ -88,20 +86,30 @@ class _EmoteOverlayState extends State<EmoteOverlay>
                   return AnimatedBuilder(
                     animation: _visibilityController,
                     builder: (context, child) {
-                      final double animationOffset = 1.0 - _visibilityController.value;
+                      final double animationOffset =
+                          1.0 - _visibilityController.value;
                       final screenSize = MediaQuery.of(context).size;
-                      
+
                       // Responsive wheel width with constraints
                       const double maxWheelWidth = 600.0;
                       const double minWheelWidth = 280.0;
-                      final double wheelWidth = (screenSize.width * 0.6).clamp(minWheelWidth, maxWheelWidth);
-                      
+                      final double wheelWidth = (screenSize.width * 0.6).clamp(
+                        minWheelWidth,
+                        maxWheelWidth,
+                      );
+
                       // Responsive positioning based on screen size
-                      final double offsetMultiplier = screenSize.width < 800 ? 0.4 : 0.3;
-                      final double baseOffset = screenSize.width < 600 ? wheelWidth * 0.3 : wheelWidth * 0.5;
-                      
+                      final double offsetMultiplier = screenSize.width < 800
+                          ? 0.4
+                          : 0.3;
+                      final double baseOffset = screenSize.width < 600
+                          ? wheelWidth * 0.3
+                          : wheelWidth * 0.5;
+
                       return Positioned(
-                        left: -baseOffset - (animationOffset * wheelWidth * offsetMultiplier),
+                        left:
+                            -baseOffset -
+                            (animationOffset * wheelWidth * offsetMultiplier),
                         top: AppSpacing.sm,
                         bottom: AppSpacing.sm,
                         child: const SizedBox.shrink(),
@@ -121,8 +129,8 @@ class _EmoteOverlayState extends State<EmoteOverlay>
                                     provider.selectEmote();
                                     _hideOverlay();
                                   },
-                                  onVerticalDragUpdate: (details) =>
-                                      provider.handlePanUpdate(details, _popController),
+                                  onVerticalDragUpdate: (details) => provider
+                                      .handlePanUpdate(details, _popController),
                                   child: EmoteWheel(
                                     scrollAngle: provider.scrollAngle,
                                     emotes: provider.emotes,
@@ -133,7 +141,10 @@ class _EmoteOverlayState extends State<EmoteOverlay>
                                 // Close button
                                 ClipOval(
                                   child: BackdropFilter(
-                                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 10.0,
+                                      sigmaY: 10.0,
+                                    ),
                                     child: GestureDetector(
                                       onTap: _hideOverlay,
                                       child: Container(
@@ -163,14 +174,9 @@ class _EmoteOverlayState extends State<EmoteOverlay>
               ),
             ),
           ),
-          
+
           // Toggle handle
-          const Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            child: OverlayHandle(),
-          ),
+          const Positioned(right: 0, top: 0, bottom: 0, child: OverlayHandle()),
         ],
       ),
     );
@@ -197,7 +203,7 @@ class OverlayHandle extends StatelessWidget {
               color: Theme.of(context).primaryColor.withAlpha(51),
               blurRadius: AppSpacing.sm + AppSpacing.xs,
               spreadRadius: AppSpacing.xs,
-            )
+            ),
           ],
         ),
         child: ClipRRect(

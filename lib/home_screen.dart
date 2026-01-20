@@ -24,9 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               // Header
               _buildHeader(),
-              
+
               const SizedBox(height: AppSpacing.xxl),
-              
+
               // Main content
               Expanded(
                 child: Column(
@@ -104,22 +104,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: const Color(0xff00f0b4).withAlpha(51),
-            ),
+            border: Border.all(color: const Color(0xff00f0b4).withAlpha(51)),
           ),
           child: Column(
             children: [
               Icon(
-                overlayService.isOverlayActive 
-                    ? Icons.layers 
-                    : Icons.touch_app,
+                overlayService.isOverlayActive ? Icons.layers : Icons.touch_app,
                 size: 64,
                 color: const Color(0xff00f0b4),
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
-                overlayService.isOverlayActive 
+                overlayService.isOverlayActive
                     ? 'Overlay Active'
                     : 'Enable Emote Wheel',
                 style: GoogleFonts.inter(
@@ -153,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   child: Text(
-                    overlayService.isOverlayActive 
+                    overlayService.isOverlayActive
                         ? 'Disable Overlay'
                         : 'Enable Overlay',
                     style: GoogleFonts.inter(
@@ -228,11 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.all(AppSpacing.sm),
           child: Row(
             children: [
-              Icon(
-                icon,
-                color: const Color(0xff00f0b4),
-                size: 20,
-              ),
+              Icon(icon, color: const Color(0xff00f0b4), size: 20),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(

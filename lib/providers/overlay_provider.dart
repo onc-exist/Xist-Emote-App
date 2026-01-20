@@ -1,4 +1,3 @@
-
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 
@@ -12,17 +11,57 @@ class OverlayProvider with ChangeNotifier {
   int _focusedEmoteIndex = 3;
   // This could be fetched from a service in a real app
   final List<Map<String, dynamic>> _emotes = [
-    {'icon': Icons.thumb_up, 'color': Colors.white, 'text': null, 'size': 24.0}, // DECREASED size
+    {
+      'icon': Icons.thumb_up,
+      'color': Colors.white,
+      'text': null,
+      'size': 24.0,
+    }, // DECREASED size
     {'icon': null, 'color': Colors.white, 'text': 'GG', 'size': null},
-    {'icon': Icons.sentiment_very_satisfied, 'color': Colors.yellow.shade400, 'text': null, 'size': 28.0}, // DECREASED size
-    {'icon': Icons.local_fire_department, 'color': const Color(0xff00f0b4), 'text': null, 'size': 28.0}, // DECREASED size
-    {'icon': Icons.back_hand, 'color': Colors.blue.shade400, 'text': null, 'size': 28.0}, // DECREASED size
-    {'icon': Icons.favorite, 'color': Colors.red.shade500, 'text': null, 'size': 28.0}, // DECREASED size
-    {'icon': Icons.celebration, 'color': Colors.purple.shade300, 'text': null, 'size': 28.0}, // DECREASED size
+    {
+      'icon': Icons.sentiment_very_satisfied,
+      'color': Colors.yellow.shade400,
+      'text': null,
+      'size': 28.0,
+    }, // DECREASED size
+    {
+      'icon': Icons.local_fire_department,
+      'color': const Color(0xff00f0b4),
+      'text': null,
+      'size': 28.0,
+    }, // DECREASED size
+    {
+      'icon': Icons.back_hand,
+      'color': Colors.blue.shade400,
+      'text': null,
+      'size': 28.0,
+    }, // DECREASED size
+    {
+      'icon': Icons.favorite,
+      'color': Colors.red.shade500,
+      'text': null,
+      'size': 28.0,
+    }, // DECREASED size
+    {
+      'icon': Icons.celebration,
+      'color': Colors.purple.shade300,
+      'text': null,
+      'size': 28.0,
+    }, // DECREASED size
     {'icon': null, 'color': Colors.white, 'text': 'WP', 'size': null},
-    {'icon': Icons.star, 'color': Colors.yellow.shade600, 'text': null, 'size': 28.0}, // DECREASED size
+    {
+      'icon': Icons.star,
+      'color': Colors.yellow.shade600,
+      'text': null,
+      'size': 28.0,
+    }, // DECREASED size
     {'icon': null, 'color': Colors.white, 'text': 'EZ', 'size': null},
-    {'icon': Icons.whatshot, 'color': Colors.orange, 'text': null, 'size': 28.0}, // DECREASED size
+    {
+      'icon': Icons.whatshot,
+      'color': Colors.orange,
+      'text': null,
+      'size': 28.0,
+    }, // DECREASED size
   ];
 
   // --- CONSTANTS ---
@@ -36,7 +75,8 @@ class OverlayProvider with ChangeNotifier {
   int get emoteCount => _emotes.length;
 
   // --- CONSTRUCTOR ---
-  OverlayProvider() : _scrollAngle = -3 * angleSpacing; // Initialize scroll angle
+  OverlayProvider()
+    : _scrollAngle = -3 * angleSpacing; // Initialize scroll angle
 
   // --- BUSINESS LOGIC (MUTATORS) ---
 
@@ -49,7 +89,8 @@ class OverlayProvider with ChangeNotifier {
   // New method to only select the emote
   void selectEmote() {
     developer.log(
-        "Emote '${_emotes[_focusedEmoteIndex]['text'] ?? _emotes[_focusedEmoteIndex]['icon'].toString()}' selected!");
+      "Emote '${_emotes[_focusedEmoteIndex]['text'] ?? _emotes[_focusedEmoteIndex]['icon'].toString()}' selected!",
+    );
     // In a real app, you might want to send this to a service
     // or show a brief confirmation animation.
     HapticFeedback.mediumImpact(); // Give feedback on selection
@@ -62,12 +103,15 @@ class OverlayProvider with ChangeNotifier {
     }
   }
 
-  void handlePanUpdate(DragUpdateDetails details, AnimationController popController) {
+  void handlePanUpdate(
+    DragUpdateDetails details,
+    AnimationController popController,
+  ) {
     // Responsive scroll sensitivity based on screen height
     final double screenHeight = 800.0; // Base reference height
     final double sensitivityFactor = 800.0 / screenHeight;
     final double adjustedSensitivity = 0.015 * sensitivityFactor;
-    
+
     _scrollAngle += details.delta.dy * -adjustedSensitivity;
 
     // Calculate the new focused index based on the angle
