@@ -18,6 +18,7 @@ This document outlines the design, features, and development process for the Flu
 - **Theme:** A modern, dark theme with a vibrant accent color (`#00f0b4`).
 - **Background:** A full-screen background image with a heavy `BackdropFilter` blur, creating a sophisticated, frosted-glass effect.
 - **Emote Slots:** Each emote is displayed in a 56x56 pixel slot with a 16px border radius, matching the design specification. Focused items have a prominent glow effect.
+- **Emote Icons:** The emote icons within the slots have been resized to `28.0` for a more refined and balanced visual appearance.
 - **Animation:** The overlay animates smoothly into view from the left. Individual emotes have a "pop" animation when they become focused.
 - **Typography:** The `GoogleFonts.splineSansTextTheme` is used for clean and modern text rendering.
 
