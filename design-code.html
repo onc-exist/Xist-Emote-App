@@ -1,0 +1,175 @@
+<html class="dark" lang="en"><head><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="text-white">
+
+
+
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Landscape Overlay with Right-Edge Toggle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00f0b4",
+                        "background-dark": "#0a0a0c",
+                        "cyber-accent": "#FF00FF",
+                        "overlay-bg": "rgba(10, 10, 12, 0.85)"
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        :root {
+            --primary-glow: rgba(0, 240, 180, 0.4);
+            --accent-glow: rgba(255, 0, 255, 0.3)
+        }
+        body {
+            font-family: "Spline Sans", sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100dvh;
+            width: 100vw;
+            background-color: #000;
+        }
+        .jog-wheel-container {
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            position: absolute;
+            left: -320px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 40px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+        }
+        .jog-wheel-rim {
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .emote-slot {
+            position: absolute;
+            right: 20px;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            transform-origin: -180px center;
+        }
+        .active-selection-indicator {
+            position: absolute;
+            left: 140px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 4px;
+            border-radius: 2px;
+            background: #00f0b4;
+            box-shadow: 0 0 15px #00f0b4;
+        }
+        .game-background {
+            position: absolute;
+            inset: 0;
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBNsmRsEO7wbJMa_zTvikw8m5WHPMoITN0dfNN9HMzCKScPj4hmT0FQ1j6NEn-cGRYt99mloS7UsgCmGF9slQ1K97_ot62bqknSHJpquO3n5stV3WxYdm4jF8w4PBkNoD5iiWOVk5fy9ibELLpB6CwxgwTZS4HwvzxIXtxeevftI8PuU6FrrkVyPK4vfGYV_a63cu_waHUeI7s9hGlNVF2taVSrQsYUtU-bkPuS1kJKRLWi3A15GdBj_DIMTjdaXMBBBDs9xJKcgsuG);
+            background-size: cover;
+            background-position: center;
+            filter: blur(12px) brightness(0.3);
+            z-index: -10;
+        }
+        .right-toggle-handle {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 120px;
+            width: 32px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-top-left-radius: 1.5rem;
+            border-bottom-left-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+        }
+    </style>
+
+
+<div class="relative w-screen h-screen flex items-center overflow-hidden">
+<div class="game-background"></div>
+<div class="right-toggle-handle">
+<button class="flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl font-light">chevron_right</span>
+</button>
+</div>
+<div class="jog-wheel-container">
+<div class="jog-wheel-rim"></div>
+<div class="active-selection-indicator"></div>
+<div class="emote-slot" style="transform: rotate(-54deg)">
+<div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center opacity-30 scale-75">
+<span class="material-symbols-outlined text-white/80 text-2xl">thumb_up</span>
+</div>
+</div>
+<div class="emote-slot" style="transform: rotate(-36deg)">
+<div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center opacity-40 scale-85">
+<span class="text-white text-lg font-black">GG</span>
+</div>
+</div>
+<div class="emote-slot" style="transform: rotate(-18deg)">
+<div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center opacity-60 scale-90">
+<span class="material-symbols-outlined text-yellow-400 text-3xl">sentiment_very_satisfied</span>
+</div>
+</div>
+<div class="emote-slot" style="transform: rotate(0deg)">
+<div class="w-14 h-14 rounded-2xl bg-white/10 border border-primary/50 flex items-center justify-center scale-100 shadow-[0_0_15px_rgba(0,240,180,0.3)]">
+<span class="material-symbols-outlined text-primary text-3xl">local_fire_department</span>
+</div>
+</div>
+<div class="emote-slot" style="transform: rotate(18deg)">
+<div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center opacity-60 scale-90">
+<span class="material-symbols-outlined text-blue-400 text-3xl">back_hand</span>
+</div>
+</div>
+<div class="emote-slot" style="transform: rotate(36deg)">
+<div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center opacity-40 scale-85">
+<span class="material-symbols-outlined text-red-500 text-3xl">favorite</span>
+</div>
+</div>
+<div class="emote-slot" style="transform: rotate(54deg)">
+<div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center opacity-30 scale-75">
+<span class="material-symbols-outlined text-white/80 text-2xl">celebration</span>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>
