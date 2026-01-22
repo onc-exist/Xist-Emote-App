@@ -1,4 +1,4 @@
-import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -56,19 +56,27 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _requestPermissions() async {
-    await SystemAlertWindow.requestPermissions;
+    await SystemAlertWindow.requestPermissions();
   }
 
-  void _showOverlay() {
+  void _showOverlay(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final overlayWidth = (width * 0.4).toInt();
+    // The only way to position on the left is to use a gravity like CENTER
+    // and then apply a margin to push it to the side.
     SystemAlertWindow.showSystemWindow(
-      height: 440,
-      width: 440,
-      gravity: SystemWindowGravity.LEFT,
-      notificationTitle: "Emote Overlay Active",
-      notificationBody: "Tap to manage the overlay.",
-      prefMode: SystemWindowPrefMode.OVERLAY,
-      isDisableClicks: false,
-    );
+        height: 440,
+        width: overlayWidth,
+        gravity: SystemWindowGravity.CENTER, // Use a valid, existing gravity
+        margin: SystemWindowMargin(
+          left: 0,
+          right: (width - overlayWidth), // Push it all the way to the left
+          top: 0,
+          bottom: 0,
+        ),
+        notificationTitle: "Emote Overlay Active",
+        notificationBody: "Tap to manage the overlay.",
+        prefMode: SystemWindowPrefMode.OVERLAY);
   }
 
   @override
@@ -88,13 +96,39 @@ class _MyAppState extends State<MyApp> {
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Emote Overlay Control'),
-        ),
         body: Center(
-          child: ElevatedButton(
-            onPressed: _showOverlay,
-            child: const Text('Show Overlay'),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Emote Overlay',
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  'Activate the floating emote wheel to use over any app.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                ElevatedButton(
+                  onPressed: () => _showOverlay(context),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xl,
+                      vertical: AppSpacing.md,
+                    ),
+                    textStyle: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  child: const Text('Activate Overlay'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
