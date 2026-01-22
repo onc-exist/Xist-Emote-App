@@ -92,7 +92,7 @@ class _EmoteOverlayState extends State<EmoteOverlay>
   Widget _buildEmoteWheelUI(OverlayProvider provider, BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
-    // Responsive wheel width with constraints, matching the main app's implementation
+    // Responsive wheel width with constraints, based on the original HTML/CSS.
     const double maxWheelWidth = 600.0;
     const double minWheelWidth = 280.0;
     final double wheelWidth = (screenSize.width * 0.6).clamp(
@@ -100,19 +100,27 @@ class _EmoteOverlayState extends State<EmoteOverlay>
       maxWheelWidth,
     );
 
-    // The wheel should be positioned mostly off-screen when closed.
-    // An offset of about 40% of its width is a good starting point.
-    final double closedOffset = -(wheelWidth * 0.4);
+    // The design shows the 440px wide container at left: -320px.
+    // This means 120px are visible. The ratio is 320 / 440 = ~0.727
+    const double hiddenRatio = 320 / 440;
+    final double openPosition = -(wheelWidth * hiddenRatio);
+
+    // When closed, the wheel is completely off-screen.
+    final double closedPosition = -wheelWidth;
 
     return AnimatedBuilder(
       animation: _visibilityController,
       builder: (context, child) {
-        // Animate the position from the closed offset to fully visible (left: 0)
-        final double left =
-            lerpDouble(closedOffset, 0, _visibilityController.value)!;
+        // Interpolate between the closed and open positions.
+        final double left = lerpDouble(
+          closedPosition,
+          openPosition,
+          _visibilityController.value,
+        )!;
+
         return Positioned(
           left: left,
-          top: AppSpacing.sm,
+          top: AppSpacing.sm, // Add some padding from the top/bottom
           bottom: AppSpacing.sm,
           child: child!,
         );

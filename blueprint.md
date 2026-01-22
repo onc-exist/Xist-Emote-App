@@ -8,7 +8,7 @@ A Flutter application that provides a system-wide overlay for sending emotes in 
 
 *   **System Overlay:** The app requests permission to draw over other apps, enabling a persistent, floating UI.
 *   **Floating Emote Wheel:** A circular menu of emotes is accessible via a discreet, draggable handle on the side of the screen.
-*   **Responsive Layout:** The UI is built with a robust and responsive layout using `Positioned` and `AnimatedBuilder`, ensuring correct placement on the edge of the screen.
+*   **Responsive and Precise Layout:** The UI is built with a robust layout using `Positioned` and `AnimatedBuilder`. The emote wheel's position is now accurately calculated based on the original design's proportions (revealing 120px of the 440px wheel), ensuring the "peeking" effect is consistent and precise across all screen sizes.
 *   **Haptic Feedback:** The device vibrates gently as the user scrolls through emotes, providing tactile feedback.
 *   **Customizable Emotes:** The `OverlayProvider` defines a list of emotes that can be a mix of text (emojis) and Material Icons.
 *   **Smooth Animations:** The overlay and emote wheel feature fluid animations for showing, hiding, and selection, powered by `AnimationController`.
@@ -17,9 +17,23 @@ A Flutter application that provides a system-wide overlay for sending emotes in 
 *   **Structured Logging:** All debug messages are handled by the `dart:developer` library, adhering to best practices and avoiding `print` statements in production code.
 *   **ABI-Specific Builds:** The application is configured to build separate APKs for different Android Application Binary Interfaces (`armeabi-v7a`, `arm64-v8a`, `x86_64`) for optimized distribution.
 
-## Current Request: Re-build for Different ABIs
+## Current Request: Implement a Persistent Overlay
 
-**Plan:**
+**Architectural Plan:**
 
-1.  **Execute Build Command:** Run `flutter build apk --split-per-abi` to compile the application and generate optimized APK files for the different target architectures.
-2.  **Verify Output:** Confirm that the APKs (`app-armeabi-v7a-release.apk`, `app-arm64-v8a-release.apk`, `app-x86_64-release.apk`) are successfully created in the `build/app/outputs/flutter-apks/` directory.
+1.  **Integrate `system_alert_window`:** The `system_alert_window` package will be used to create and manage a persistent foreground service for the overlay.
+2.  **Isolate the Overlay UI:** The `EmoteOverlay` widget and its related code will be moved into a separate, top-level function. This function will serve as the entry point for the overlay service, which runs in its own Dart Isolate.
+3.  **Manage the Foreground Service:** The main application will be responsible for:
+    *   Requesting the necessary permissions (`SYSTEM_ALERT_WINDOW` and `FOREGROUND_SERVICE`).
+    *   Starting and stopping the overlay service.
+    *   Communicating with the service to show/hide the overlay and update settings.
+4.  **Update `AndroidManifest.xml`:** The manifest will be updated to declare the foreground service and its required permissions.
+5.  **Re-implement Precise Positioning:** The design-driven positioning logic will be re-implemented using the layout capabilities of the `system_alert_window` package to ensure the emote wheel is perfectly placed.
+
+**Next Steps:**
+
+1.  Update the `pubspec.yaml` with the `system_alert_window` dependency (already completed).
+2.  Update the `blueprint.md` file with the new architectural plan (this step).
+3.  Refactor the code to move the overlay into a separate Isolate and manage it with the new package.
+4.  Update the `AndroidManifest.xml` file.
+5.  Test the persistent overlay to ensure it remains active after the main app is closed.
