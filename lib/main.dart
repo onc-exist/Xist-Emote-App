@@ -61,19 +61,10 @@ class _MyAppState extends State<MyApp> {
 
   void _showOverlay(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final overlayWidth = (width * 0.4).toInt();
-    // The only way to position on the left is to use a gravity like CENTER
-    // and then apply a margin to push it to the side.
     SystemAlertWindow.showSystemWindow(
         height: 440,
-        width: overlayWidth,
+        width: (width * 0.4).toInt(), // Make it responsive
         gravity: SystemWindowGravity.CENTER, // Use a valid, existing gravity
-        margin: SystemWindowMargin(
-          left: 0,
-          right: (width - overlayWidth), // Push it all the way to the left
-          top: 0,
-          bottom: 0,
-        ),
         notificationTitle: "Emote Overlay Active",
         notificationBody: "Tap to manage the overlay.",
         prefMode: SystemWindowPrefMode.OVERLAY);
