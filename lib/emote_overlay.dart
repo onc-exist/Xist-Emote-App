@@ -17,7 +17,6 @@ class EmoteOverlay extends StatefulWidget {
 class _EmoteOverlayState extends State<EmoteOverlay>
     with TickerProviderStateMixin {
   late AnimationController _visibilityController;
-  late Animation<Offset> _slideAnimation;
   late AnimationController _popController;
 
   @override
@@ -28,17 +27,6 @@ class _EmoteOverlayState extends State<EmoteOverlay>
       duration: const Duration(milliseconds: 350),
       reverseDuration: const Duration(milliseconds: 350),
     );
-
-    _slideAnimation =
-        Tween<Offset>(
-          begin: const Offset(-0.5, 0.0),
-          end: const Offset(0.0, 0.0),
-        ).animate(
-          CurvedAnimation(
-            parent: _visibilityController,
-            curve: Curves.easeInOutCubic,
-          ),
-        );
 
     _popController = AnimationController(
       vsync: this,
@@ -80,11 +68,10 @@ class _EmoteOverlayState extends State<EmoteOverlay>
               // Conditionally display the full emote wheel
               if (provider.isOverlayVisible ||
                   _visibilityController.isAnimating) ...[
-                _buildEmoteWheelUI(provider),
+                _buildEmoteWheelUI(provider, context),
               ],
 
-              // Always display the handle (it will be covered by the wheel)
-              // Or use a more sophisticated way to hide/show it based on state
+              // Show handle only when the wheel is not visible and not animating
               if (!provider.isOverlayVisible &&
                   !_visibilityController.isAnimating) ...[
                 const Positioned(
@@ -102,16 +89,42 @@ class _EmoteOverlayState extends State<EmoteOverlay>
   }
 
   // Extracts the UI for the emote wheel into a separate, clean method
-  Widget _buildEmoteWheelUI(OverlayProvider provider) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: SlideTransition(
-        position: _slideAnimation,
-        child: FadeTransition(
-          opacity: _visibilityController,
-          child: ClipPath(
-            clipper: ArcClipper(),
+  Widget _buildEmoteWheelUI(OverlayProvider provider, BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+
+    // Responsive wheel width with constraints, matching the main app's implementation
+    const double maxWheelWidth = 600.0;
+    const double minWheelWidth = 280.0;
+    final double wheelWidth = (screenSize.width * 0.6).clamp(
+      minWheelWidth,
+      maxWheelWidth,
+    );
+
+    // The wheel should be positioned mostly off-screen when closed.
+    // An offset of about 40% of its width is a good starting point.
+    final double closedOffset = -(wheelWidth * 0.4);
+
+    return AnimatedBuilder(
+      animation: _visibilityController,
+      builder: (context, child) {
+        // Animate the position from the closed offset to fully visible (left: 0)
+        final double left =
+            lerpDouble(closedOffset, 0, _visibilityController.value)!;
+        return Positioned(
+          left: left,
+          top: AppSpacing.sm,
+          bottom: AppSpacing.sm,
+          child: child!,
+        );
+      },
+      child: FadeTransition(
+        opacity: _visibilityController, // Also fade it in for a smoother look
+        child: ClipPath(
+          clipper: ArcClipper(),
+          child: SizedBox(
+            width: wheelWidth, // Constrain the wheel's size
             child: Center(
+              // Center the content within the Arc
               child: AnimatedBuilder(
                 animation: _popController,
                 builder: (context, child) {
