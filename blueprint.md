@@ -8,7 +8,7 @@ A Flutter application that provides a system-wide overlay for sending emotes in 
 
 *   **System Overlay:** The app requests permission to draw over other apps, enabling a persistent, floating UI.
 *   **Floating Emote Wheel:** A circular menu of emotes is accessible via a discreet, draggable handle on the side of the screen.
-*   **Responsive Layout:** The UI is built with a robust and responsive layout using `Align` and `SlideTransition`, eliminating overflow errors.
+*   **Responsive Layout:** The UI is built with a robust and responsive layout using `Positioned` and `AnimatedBuilder`, ensuring correct placement on the edge of the screen.
 *   **Haptic Feedback:** The device vibrates gently as the user scrolls through emotes, providing tactile feedback.
 *   **Customizable Emotes:** The `OverlayProvider` defines a list of emotes that can be a mix of text (emojis) and Material Icons.
 *   **Smooth Animations:** The overlay and emote wheel feature fluid animations for showing, hiding, and selection, powered by `AnimationController`.
