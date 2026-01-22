@@ -69,6 +69,7 @@ class GamingOverlay extends StatefulWidget {
 class _GamingOverlayState extends State<GamingOverlay>
     with TickerProviderStateMixin {
   late AnimationController _visibilityController;
+  late Animation<Offset> _slideAnimation;
   late AnimationController _popController;
 
   @override
@@ -76,8 +77,21 @@ class _GamingOverlayState extends State<GamingOverlay>
     super.initState();
     _visibilityController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 350),
+      reverseDuration: const Duration(milliseconds: 350),
     );
+
+    _slideAnimation =
+        Tween<Offset>(
+          begin: const Offset(-0.5, 0.0), // Start partially off-screen
+          end: const Offset(0.0, 0.0), // End fully on-screen
+        ).animate(
+          CurvedAnimation(
+            parent: _visibilityController,
+            curve: Curves.easeInOutCubic,
+          ),
+        );
+
     _popController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
@@ -87,10 +101,9 @@ class _GamingOverlayState extends State<GamingOverlay>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<OverlayProvider>(context, listen: false);
       provider.addListener(() {
-        if (provider.isOverlayVisible && !_visibilityController.isCompleted) {
+        if (provider.isOverlayVisible) {
           _visibilityController.forward();
-        } else if (!provider.isOverlayVisible &&
-            _visibilityController.isCompleted) {
+        } else {
           _visibilityController.reverse();
         }
       });
@@ -112,96 +125,72 @@ class _GamingOverlayState extends State<GamingOverlay>
         child: Stack(
           children: [
             const Background(),
-            Consumer<OverlayProvider>(
-              builder: (context, provider, child) {
-                return AnimatedBuilder(
-                  animation: _visibilityController,
-                  builder: (context, child) {
-                    final double animationOffset =
-                        1.0 - _visibilityController.value;
-                    final screenSize = MediaQuery.of(context).size;
-
-                    // Responsive wheel width with constraints
-                    const double maxWheelWidth = 600.0;
-                    const double minWheelWidth = 280.0;
-                    final double wheelWidth = (screenSize.width * 0.6).clamp(
-                      minWheelWidth,
-                      maxWheelWidth,
-                    );
-
-                    // Responsive positioning based on screen size
-                    final double offsetMultiplier = screenSize.width < 800
-                        ? 0.4
-                        : 0.3;
-                    final double baseOffset = screenSize.width < 600
-                        ? wheelWidth * 0.3
-                        : wheelWidth * 0.5;
-
-                    return Positioned(
-                      left:
-                          -baseOffset -
-                          (animationOffset * wheelWidth * offsetMultiplier),
-                      top: AppSpacing.sm,
-                      bottom: AppSpacing.sm,
-                      child: FadeTransition(
-                        opacity: _visibilityController,
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: ClipPath(
-                    clipper: ArcClipper(), // Re-enabled with responsive design
-                    child: Center(
-                      child: AnimatedBuilder(
-                        animation: _popController,
-                        builder: (context, child) {
-                          return Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: provider.selectEmote,
-                                onVerticalDragUpdate: (details) => provider
-                                    .handlePanUpdate(details, _popController),
-                                child: EmoteWheel(
-                                  scrollAngle: provider.scrollAngle,
-                                  emotes: provider.emotes,
-                                  focusedIndex: provider.focusedEmoteIndex,
-                                  popAnimation: _popController.value,
-                                ),
-                              ),
-                              // Removed redundant Positioned and Center widgets
-                              ClipOval(
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: 10.0,
-                                    sigmaY: 10.0,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: FadeTransition(
+                  opacity: _visibilityController,
+                  child: Consumer<OverlayProvider>(
+                    builder: (context, provider, child) {
+                      return ClipPath(
+                        clipper:
+                            ArcClipper(), // Clipper now works with the aligned widget
+                        child: Center(
+                          child: AnimatedBuilder(
+                            animation: _popController,
+                            builder: (context, child) {
+                              return Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: provider.selectEmote,
+                                    onVerticalDragUpdate: (details) =>
+                                        provider.handlePanUpdate(
+                                          details,
+                                          _popController,
+                                        ),
+                                    child: EmoteWheel(
+                                      scrollAngle: provider.scrollAngle,
+                                      emotes: provider.emotes,
+                                      focusedIndex: provider.focusedEmoteIndex,
+                                      popAnimation: _popController.value,
+                                    ),
                                   ),
-                                  child: GestureDetector(
-                                    onTap: provider.dismissOverlay,
-                                    child: Container(
-                                      width: AppSpacing.xl + AppSpacing.xl,
-                                      height: AppSpacing.xl + AppSpacing.xl,
-                                      decoration: BoxDecoration(
-                                        color: Colors.black.withAlpha(76),
-                                        shape: BoxShape.circle,
+                                  ClipOval(
+                                    child: BackdropFilter(
+                                      filter: ImageFilter.blur(
+                                        sigmaX: 10.0,
+                                        sigmaY: 10.0,
                                       ),
-                                      child: const Icon(
-                                        Icons.close,
-                                        color: Colors.white,
-                                        size: AppSpacing.lg + AppSpacing.sm,
+                                      child: GestureDetector(
+                                        onTap: provider.dismissOverlay,
+                                        child: Container(
+                                          width: AppSpacing.xl + AppSpacing.xl,
+                                          height: AppSpacing.xl + AppSpacing.xl,
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withAlpha(76),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                            size: AppSpacing.lg + AppSpacing.sm,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
+                ),
+              ),
             ),
             const RightHandle(),
           ],
