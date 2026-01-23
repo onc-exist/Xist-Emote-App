@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class OverlayProvider with ChangeNotifier {
   static const double angleSpacing = math.pi / 6; // 12 emotes
@@ -73,17 +74,48 @@ class OverlayProvider with ChangeNotifier {
   void selectEmote() {
     if (_isOverlayVisible) {
       final selected = emotes[_focusedEmoteIndex];
-      // Use the developer log for structured debugging output
-      developer.log(
-        'Emote selected',
-        name: 'xist.emote_overlay',
-        level: 800, // INFO level
-        error: {
-          'emote': selected['text'] ?? selected['icon'].toString(),
-          'index': _focusedEmoteIndex,
-        },
-      );
+      
+      // Copy emote to clipboard for real functionality
+      if (selected['text'] != null) {
+        Clipboard.setData(ClipboardData(text: selected['text']));
+        developer.log(
+          'Emote copied to clipboard',
+          name: 'xist.emote_overlay',
+          level: 800,
+          error: {
+            'emote': selected['text'],
+            'type': 'unicode',
+            'index': _focusedEmoteIndex,
+          },
+        );
+      } else if (selected['icon'] != null) {
+        // For icon emotes, copy a text representation
+        final iconText = _getIconText(selected['icon']);
+        Clipboard.setData(ClipboardData(text: iconText));
+        developer.log(
+          'Icon emote copied to clipboard',
+          name: 'xist.emote_overlay',
+          level: 800,
+          error: {
+            'emote': iconText,
+            'type': 'icon',
+            'index': _focusedEmoteIndex,
+          },
+        );
+      }
+      
       dismissOverlay();
     }
+  }
+
+  String _getIconText(IconData icon) {
+    // Convert Material Icons to text representations
+    if (icon == Icons.thumb_up) return '👍';
+    if (icon == Icons.thumb_down) return '👎';
+    if (icon == Icons.favorite) return '❤️';
+    if (icon == Icons.star) return '⭐';
+    if (icon == Icons.celebration) return '🎉';
+    if (icon == Icons.help) return '❓';
+    return '📱'; // Default fallback
   }
 }

@@ -24,9 +24,13 @@ void overlayMain() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => OverlayProvider(),
-      child: const MaterialApp(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: GamingOverlay(),
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: Colors.transparent,
+        ),
+        home: const GamingOverlay(),
       ),
     ),
   );
@@ -34,7 +38,10 @@ void overlayMain() {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // Allow both orientations for home screen
   SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
@@ -49,25 +56,55 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool _isOverlayActive = false;
+
   @override
   void initState() {
     super.initState();
-    _requestPermissions();
+    _checkOverlayStatus();
+  }
+
+  Future<void> _checkOverlayStatus() async {
+    final isGranted = await SystemAlertWindow.checkPermissions();
+    if (isGranted == true) {
+      // Note: isOverlayActive might not be available in this version
+      // We'll assume overlay is inactive on startup
+      setState(() {
+        _isOverlayActive = false;
+      });
+    }
   }
 
   Future<void> _requestPermissions() async {
     await SystemAlertWindow.requestPermissions();
   }
 
-  void _showOverlay(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    SystemAlertWindow.showSystemWindow(
-        height: 440,
-        width: (width * 0.4).toInt(), // Make it responsive
-        gravity: SystemWindowGravity.CENTER, // Use a valid, existing gravity
-        notificationTitle: "Emote Overlay Active",
-        notificationBody: "Tap to manage the overlay.",
-        prefMode: SystemWindowPrefMode.OVERLAY);
+  Future<void> _toggleOverlay() async {
+    final hasPermission = await SystemAlertWindow.checkPermissions();
+    if (hasPermission != true) {
+      await _requestPermissions();
+      return;
+    }
+
+    if (_isOverlayActive) {
+      await SystemAlertWindow.closeSystemWindow();
+      setState(() {
+        _isOverlayActive = false;
+      });
+    } else {
+      // Show minimal trigger overlay - not the full wheel
+      SystemAlertWindow.showSystemWindow(
+        height: 120,
+        width: 60,
+        gravity: SystemWindowGravity.RIGHT,
+        notificationTitle: "Emote Overlay",
+        notificationBody: "Tap to show emote wheel",
+        prefMode: SystemWindowPrefMode.OVERLAY,
+      );
+      setState(() {
+        _isOverlayActive = true;
+      });
+    }
   }
 
   @override
@@ -87,38 +124,130 @@ class _MyAppState extends State<MyApp> {
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Emote Overlay',
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  'Activate the floating emote wheel to use over any app.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                ElevatedButton(
-                  onPressed: () => _showOverlay(context),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.xl,
-                      vertical: AppSpacing.md,
-                    ),
-                    textStyle: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  child: const Text('Activate Overlay'),
-                ),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xff1a1a2e),
+                Colors.black87,
+                const Color(0xff0f0f1e),
               ],
+            ),
+          ),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.emoji_emotions_outlined,
+                    size: 80,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    'Xist Emote Overlay',
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    'Floating emote wheel that works over any app',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.white70,
+                        ),
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withAlpha(10),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor.withAlpha(51),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _isOverlayActive ? Icons.check_circle : Icons.info_outline,
+                              color: _isOverlayActive 
+                                ? Colors.green 
+                                : Theme.of(context).primaryColor,
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Text(
+                              _isOverlayActive 
+                                ? 'Overlay Active' 
+                                : 'Overlay Inactive',
+                              style: TextStyle(
+                                color: _isOverlayActive 
+                                  ? Colors.green 
+                                  : Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          _isOverlayActive 
+                            ? 'Floating trigger is visible on screen'
+                            : 'Enable overlay to see floating trigger',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Colors.white54,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xxl),
+                  ElevatedButton.icon(
+                    onPressed: _toggleOverlay,
+                    icon: Icon(
+                      _isOverlayActive ? Icons.stop : Icons.play_arrow,
+                    ),
+                    label: Text(
+                      _isOverlayActive ? 'Stop Overlay' : 'Start Overlay',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.xl,
+                        vertical: AppSpacing.md,
+                      ),
+                      backgroundColor: _isOverlayActive 
+                        ? Colors.red.withAlpha(51)
+                        : Theme.of(context).primaryColor.withAlpha(51),
+                      foregroundColor: _isOverlayActive 
+                        ? Colors.red
+                        : Theme.of(context).primaryColor,
+                      textStyle: Theme.of(context).textTheme.titleLarge,
+                      side: BorderSide(
+                        color: _isOverlayActive 
+                          ? Colors.red
+                          : Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    'The overlay will appear as a small floating trigger\nTap it to show the emote wheel',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.white54,
+                        ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
