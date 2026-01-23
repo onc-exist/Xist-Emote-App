@@ -96,7 +96,7 @@ class _MyAppState extends State<MyApp> {
       SystemAlertWindow.showSystemWindow(
         height: 120,
         width: 60,
-        gravity: SystemWindowGravity.CENTER,
+        gravity: SystemWindowGravity.RIGHT,
         notificationTitle: "Emote Overlay",
         notificationBody: "Tap to show emote wheel",
         prefMode: SystemWindowPrefMode.OVERLAY,
